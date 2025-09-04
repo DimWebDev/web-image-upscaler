@@ -133,6 +133,7 @@ Scope and sources
 
 Invocation rule
 - When input matches `/name ...` or `/namespace/name ...`, interpret it as: execute the corresponding markdown file as a command with `$ARGUMENTS` set to the trailing text.
+- If the command is not an exact match but close to an existing one (e.g., minor typos or variations), identify and execute the closest match.
 - Resolution examples:
   - `/heatmap proposal=docs/plan.md` → ./.claude/commands/heatmap.md (or ~/.claude/commands/heatmap.md)
   - `/analysis/statistician chart=metrics/retention.png` → ./.claude/commands/analysis/statistician.md
