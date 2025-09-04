@@ -1,6 +1,6 @@
-# CLAUDE.md
+# AGENTS.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to codex when working with code in this repository.
 
 ## Project Overview
 
@@ -122,3 +122,30 @@ If the new tasks indicate a change in architecture, scope, or planning, **also u
 Always maintain objectivity in our interactions. Do not assume I am right—question assumptions, provide evidence-based feedback, and offer honest opinions even when they contradict my suggestions. This approach helps me learn and improve through constructive dialogue.
 
 This is the only way I can learn through our interactions.
+
+# Commands + Agents convention for Codex
+
+Scope and sources
+- Look up commands and agents in this order:
+  1) ./.claude/commands and ./.claude/agents (project scope)
+  2) ~/.claude/commands and ~/.claude/agents (user/global scope)
+- Treat files found in these folders as immutable execution artifacts. Do not EVER modify them; only read and execute per their instructions. THIS IS MANDATORY!
+
+Invocation rule
+- When input matches `/name ...` or `/namespace/name ...`, interpret it as: execute the corresponding markdown file as a command with `$ARGUMENTS` set to the trailing text.
+- Resolution examples:
+  - `/heatmap proposal=docs/plan.md` → ./.claude/commands/heatmap.md (or ~/.claude/commands/heatmap.md)
+  - `/analysis/statistician chart=metrics/retention.png` → ./.claude/commands/analysis/statistician.md
+  - `/agents/reviewer-security diff=tmp/patch.diff` → ./.claude/agents/reviewer-security.md
+
+Immutability and edit policy
+- Do not edit files under ./.claude/commands, ./.claude/agents, or their user/global counterparts during normal operation.
+
+Safety and side effects
+- Treat these command/agent files as declarative specs; execute only the steps required to produce their OUT artifact.
+- Avoid network, system, or repo-wide side effects not explicitly stated in the file; prefer read-only behavior unless the file clearly instructs safe writes.
+- Surface approval prompts before any action that writes outside ./.claude/.runs or the current repo.
+
+Notes
+- Project files take precedence over user/global files with the same name.
+- Keep commands/agents 1 page long with a clear Definition of Done; ensure every file prints `OUT:` for reliable chaining.

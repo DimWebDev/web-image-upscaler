@@ -1,0 +1,293 @@
+title: "Stateless Web Image Upscaler — System Architecture (High Level)"
+schema_version: "1.0"
+doc_owner: "Eng Lead"
+status: "Proposed v1.0 (MVP scope)"
+last_updated: "2025-09-04"
+
+# ---------------------------------------------------------------------
+# References (single source of truth for supporting documents)
+# ---------------------------------------------------------------------
+references:
+  prd_ref: "docs/product/PRD.md"
+  spec_ref: "docs/specifications/stateless-web-image-upscaler-specification-2025-09-04.md"
+  ui_ux_ref: "docs/design/ui_ux.md"
+  backlog_ref: "docs/project/backlog.md"
+  tech_stack_ref: "docs/tech stack/tech_stack.md"  # <- authoritative tech stack (version pins, tooling)
+
+# ---------------------------------------------------------------------
+# Architecture drivers and scope
+# ---------------------------------------------------------------------
+drivers:
+  - "Privacy & statelessness: all processing happens locally in the browser. No uploads, no accounts, no telemetry."
+  - "≤ 5-click happy path: Landing -> Validate -> Analyze / Process / Finalize -> Compare -> Download."
+  - "Cross-browser MVP: Chrome >= 91, Firefox >= 89, Safari >= 16.4 with graceful degradation."
+  - "Quality first: visible improvement prioritized over speed; show PSNR/SSIM where feasible."
+  - "Maintainability: pluggable engines behind a stable interface; typed worker protocol; clear module boundaries."
+  - "Scalability: static hosting + CDN; scale surface is bandwidth and cache hit-rate (no app servers)."
+
+non_goals_mvp:
+  - "User accounts, server-side processing, mobile packaging."
+  - "Advanced editing (crop, color grading, denoise as standalone), batch processing, watermarking."
+  - "Cloud storage or telemetry."
+
+# ---------------------------------------------------------------------
+# System context (no diagrams; plain descriptive text)
+# ---------------------------------------------------------------------
+system_context:
+  description: >
+    A browser-based single-page application performs all image processing on the client using Web Workers.
+    Assets (JS bundle, WASM binaries, model weights) are served from a static host and CDN under the same
+    origin. Cross-origin isolation (COOP/COEP) enables SharedArrayBuffer and WASM threading. User images
+    and metrics never leave the device.
+
+# ---------------------------------------------------------------------
+# Logical architecture (layered view)
+# ---------------------------------------------------------------------
+logical_architecture:
+  presentation_layer:
+    description: >
+      React 18 + TypeScript 5 UI with pages (Landing, Processing, Compare, Error), reusable components
+      (DropZone, StageIndicator, Comparison, Download, ErrorMessage, MetricsPanel, PrivacyNotice), local
+      and/or context state (lightweight store optional), and hash routing.
+  orchestrator:
+    description: >
+      Central flow manager responsible for stage transitions, error taxonomy, feature detection, memory
+      guardrails (preflight + tiling policy), and fallback selection (primary -> secondary -> last-resort).
+  processing_layer:
+    description: >
+      Web Worker(s) host the enhancement engines, perform tiled processing, handle image I/O (decode/encode),
+      compute optional metrics, and aggressively release memory. Engines are selected by capability.
+    engines:
+      - name: "TFJS WASM + UpscalerJS"
+        role: "Primary AI-based upscaler"
+      - name: "wasm-vips"
+        role: "Secondary fallback for resize + sharpen"
+      - name: "Canvas/WebGL"
+        role: "Last-resort compatibility path"
+    capabilities:
+      - "SIMD, SharedArrayBuffer, OffscreenCanvas, and threads are detected to choose the best path."
+      - "Tiling ensures memory stays within browser limits; buffers are disposed promptly."
+  comparison_export:
+    description: >
+      Side-by-side comparison to verify improvement, an optional PSNR/SSIM metrics panel, and one-click
+      download in the original format (with a clear suffix).
+
+# ---------------------------------------------------------------------
+# Processing pipeline (stages and fallback)
+# ---------------------------------------------------------------------
+processing_pipeline:
+  stages:
+    - name: "Analyzing"
+      actions:
+        - "Detect features and capabilities."
+        - "Estimate memory footprint and decide tiling."
+        - "Select an engine based on capabilities and guardrails."
+    - name: "Processing"
+      actions:
+        - "Perform tiled upscaling in worker."
+        - "Dispose intermediate buffers aggressively."
+    - name: "Finalizing"
+      actions:
+        - "Encode output and release resources."
+    - name: "Compare"
+      actions:
+        - "Show before/after view."
+        - "Optionally compute and display PSNR/SSIM."
+        - "Enable download with suffixed filename."
+  fallback_strategy: "On constraint or error: try TFJS -> wasm-vips -> Canvas/WebGL automatically, with user-facing messaging."
+
+# ---------------------------------------------------------------------
+# Key subsystems and contracts
+# ---------------------------------------------------------------------
+key_subsystems:
+  worker_protocol:
+    description: "Typed message-based protocol between UI (main thread) and processor worker(s)."
+    commands:
+      - verb: "ANALYZE"
+        purpose: "Feature detection and tiling plan."
+        payload: "imageMeta {width, height, format, bytes}, optional hints."
+      - verb: "PROCESS"
+        purpose: "Run selected engine (tiled if needed)."
+        payload: "config {scale, model, preset}, input (transferable)."
+      - verb: "FINALIZE"
+        purpose: "Encode output and cleanup."
+        payload: "format, quality?"
+      - verb: "METRICS"
+        purpose: "Compute SSIM/PSNR (optional)."
+        payload: "references to original and enhanced artifacts."
+      - verb: "CANCEL"
+        purpose: "Abort current job."
+        payload: "job id."
+    events:
+      - event: "STAGE_UPDATE"
+        meaning: "Stage change and/or engine selection."
+        data: "engineChoice, tilingPlan, featureReport."
+      - event: "PROGRESS"
+        meaning: "Progress update."
+        data: "percent, tileIndex, timing."
+      - event: "RESULT_READY"
+        meaning: "Processing result is ready."
+        data: "output (transferable), stats."
+      - event: "METRICS_READY"
+        meaning: "Metrics computed."
+        data: "SSIM, PSNR."
+      - event: "ERROR"
+        meaning: "Categorized error."
+        data: "category (memory, timeout, unsupported), message."
+    transferables:
+      - "ImageBitmap"
+      - "ArrayBuffer"
+  engine_interface:
+    description: "Stable adapter contract for pluggable engines."
+    contract_typescript: |
+      interface UpscaleEngine {
+        name: 'tfjs-wasm' | 'wasm-vips' | 'canvas-basic';
+        supports(featureReport: object): boolean;
+        process(input: ArrayBuffer | ImageBitmap, config: object, onTileDone?: (i:number)=>void): Promise<Output>;
+        dispose(): void;
+      }
+    roles:
+      primary: "TFJS WASM + UpscalerJS (SIMD, threads, SharedArrayBuffer via COOP/COEP)."
+      secondary: "wasm-vips (SIMD; robust fallback for memory/time constraints)."
+      last_resort: "Canvas/WebGL (broad compatibility and minimum viability)."
+  feature_detection_guardrails:
+    - "Detect SIMD, SharedArrayBuffer, OffscreenCanvas, and thread support on load."
+    - "Perform preflight memory estimate; size tiles accordingly to prevent crashes."
+    - "If constraints are detected, provide clear guidance (resize suggestion, choose fallback)."
+  metrics_module:
+    - "SSIM via ssim.js."
+    - "Lightweight PSNR implementation."
+    - "Metrics are optional; never block main UX."
+
+# ---------------------------------------------------------------------
+# Runtime and deployment
+# ---------------------------------------------------------------------
+runtime_deployment:
+  process: >
+    Build with Vite (Node 20.x); run CI (lint, typecheck, unit tests, a11y checks, build); deploy static
+    assets to a host like Vercel or Netlify. Enforce COOP: same-origin and COEP: require-corp headers and
+    a strict same-origin CSP. Distribute via CDN; app runs entirely in the user’s browser.
+  policies:
+    headers:
+      - "COOP: same-origin"
+      - "COEP: require-corp"
+      - "CSP: same-origin model/WASM loading; no third-party scripts."
+    caching:
+      - "Optional service worker caches app shell and model files only."
+      - "Never cache user images."
+  tech_stack_reference: "docs/tech stack/tech_stack.md"  # authoritative source for versions/pins/tooling
+  notes:
+    - "Models and WASM are served from /public/models/ on the same origin."
+    - "Edge-served static files; no application servers to scale."
+
+# ---------------------------------------------------------------------
+# Data flow (happy path and degradation)
+# ---------------------------------------------------------------------
+data_flow:
+  happy_path:
+    - "User imports image via DropZone."
+    - "Analyze: perform capability detection and tiling; select engine."
+    - "Process: run tiled upscaling in worker."
+    - "Finalize: encode output and release memory."
+    - "Compare: show side-by-side; optionally compute metrics."
+    - "Download: save enhanced image with a clear suffix."
+  degradation: "On errors or constraints, orchestrator automatically falls back and provides retry and resize guidance."
+
+# ---------------------------------------------------------------------
+# Cross-cutting concerns
+# ---------------------------------------------------------------------
+cross_cutting_concerns:
+  privacy_security:
+    - "No remote analytics or uploads; session-local events only."
+    - "COOP/COEP enforced; strict same-origin CSP."
+  accessibility_ux:
+    - "Keyboardable DropZone and controls."
+    - "ARIA live regions announce stage changes."
+    - "Visible focus and reduced-motion variants."
+  performance_reliability:
+    - "Workers + WASM for heavy compute."
+    - "Tiling and aggressive buffer disposal."
+    - "Lazy-loaded model chunks and prompt cleanup."
+
+# ---------------------------------------------------------------------
+# Module boundaries (directory layout)
+# ---------------------------------------------------------------------
+module_boundaries:
+  src:
+    pages: ["Landing", "Processing", "Compare", "Error"]
+    components:
+      - "DropZone"
+      - "StageIndicator"
+      - "Comparison"
+      - "Download"
+      - "ErrorMessage"
+      - "MetricsPanel"
+      - "PrivacyNotice"
+    state: "Flow store and orchestration."
+    workers: "processor.worker.ts, engine adapters, metrics."
+    engines: ["tfjs-wasm", "wasm-vips", "canvas-basic"]
+    utils: ["memory-estimator", "feature-detect", "image-io", "psnr"]
+    services: ["model-loader", "sw-registration"]
+    styles: "Design tokens and utilities."
+  public:
+    models: "Model weights and WASM binaries (same origin)."
+
+# ---------------------------------------------------------------------
+# Acceptance and test strategy (MVP)
+# ---------------------------------------------------------------------
+acceptance_and_test_strategy:
+  unit_component:
+    - "Memory estimator."
+    - "PSNR/SSIM utilities."
+    - "DropZone, StageIndicator, ErrorMessage, MetricsPanel."
+  e2e:
+    - "Happy path: Upload -> Process -> Compare -> Download."
+    - "Run on Chrome and Firefox; Safari included in cross-browser matrix."
+  accessibility: "WCAG 2.1 AA checks in CI using vitest-axe."
+  performance: "No memory growth across three sequential runs on ~2 MP images; tune tiling accordingly."
+
+# ---------------------------------------------------------------------
+# Architectural decisions (ADRs)
+# ---------------------------------------------------------------------
+adrs:
+  - "All processing client-side to maximize privacy and reduce ops."
+  - "COOP/COEP required for SharedArrayBuffer and WASM threading."
+  - "Pluggable engine tiering: TFJS primary, wasm-vips secondary, Canvas/WebGL last-resort."
+  - "Typed worker protocol for isolation, resilience, and future engine swaps."
+  - "Same-origin hosting for models and WASM."
+
+# ---------------------------------------------------------------------
+# Evolution and extension points
+# ---------------------------------------------------------------------
+evolution_extensions:
+  - "Add engines by implementing the UpscaleEngine adapter contract."
+  - "Post-MVP UX: slider compare, Quality vs Speed presets, optional PWA install."
+  - "Desktop packaging via Electron wrapper reusing the SPA bundle."
+
+# ---------------------------------------------------------------------
+# Risks and mitigations
+# ---------------------------------------------------------------------
+risks_mitigations:
+  - risk: "Model quality insufficient."
+    mitigation: "Evaluate multiple models early; set improvement threshold; fall back to classical enhancement."
+  - risk: "Processing time unacceptable."
+    mitigation: "Communicate quality-over-speed; tune tiling; add speed presets post-MVP."
+  - risk: "Browser memory constraints."
+    mitigation: "Preflight estimate; tile images; provide pre-resize guidance; tiered fallbacks."
+  - risk: "Safari SharedArrayBuffer limitations and browser quirks."
+    mitigation: "Ensure Canvas/WebGL fallback works; document caveats on Help/Compat page."
+
+# ---------------------------------------------------------------------
+# Handoff notes (implementation-agnostic but execution-ready)
+# ---------------------------------------------------------------------
+handoff_notes:
+  summary: >
+    Build each module per this document, wire the typed worker protocol and engine adapters, and align PRs to
+    backlog milestones and acceptance criteria. This file is intended to be both human-readable and easily
+    machine-parseable for validation tooling.
+  tech_stack_reference: "docs/tech stack/tech_stack.md"  # use this file for exact versions and tooling pins
+  ci_requirements:
+    - "GitHub Actions: lint, typecheck, unit tests, accessibility checks, build."
+  deployment_notes:
+    - "Enforce COOP: same-origin and COEP: require-corp."
+    - "Serve /public/models/ and WASM binaries from the same origin."
