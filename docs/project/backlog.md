@@ -16,7 +16,7 @@ Conventions:
 
 ## Milestone 0 — Foundations & Tooling (Week 1)
 
-- [ ] Initialize repository and tooling [devops][frontend][docs] (P0)
+- [ ] **Task 0.1: Repository and Tooling Setup** [devops][frontend][docs] (P0)
   - Depends → none
   - Subtasks:
     - [ ] Create `package.json` with `engines.node = 20.19.4` and pinned deps per tech stack
@@ -30,8 +30,8 @@ Conventions:
     - Local dev server runs and renders a placeholder App page
     - Lint and format succeed on clean repo
 
-- [ ] Cross-Origin Isolation for dev & prod [devops] (P0)
-  - Depends → Foundations
+- [ ] **Task 0.2: Cross-Origin Isolation Configuration** [devops] (P0)
+  - Depends → Task 0.1
   - Subtasks:
     - [ ] Configure Vite dev server headers: `COOP: same-origin`, `COEP: require-corp`
     - [ ] Add production header guidance (Vercel/Netlify config) to `docs/`
@@ -39,16 +39,16 @@ Conventions:
     - `self.crossOriginIsolated === true` in dev
     - Documented steps for enabling same in production
 
-- [ ] CI Pipeline (GitHub Actions) [devops][qa] (P1)
-  - Depends → Foundations
+- [ ] **Task 0.3: CI Pipeline Setup** [devops][qa] (P1)
+  - Depends → Task 0.1
   - Subtasks:
     - [ ] Node 20.19.4 matrix job: install, lint, typecheck, test, build
     - [ ] Upload build artifacts
   - Acceptance Criteria:
     - CI runs on PRs and main pushes; all checks must pass
 
-- [ ] Documentation skeleton [docs] (P1)
-  - Depends → Foundations
+- [ ] **Task 0.4: Documentation Foundation** [docs] (P1)
+  - Depends → Task 0.1
   - Subtasks:
     - [ ] Add README with run/build/test instructions and privacy principles
     - [ ] Link to PRD, Spec, UI/UX; note browser requirements
@@ -58,16 +58,16 @@ Conventions:
 
 ## Milestone 1 — UI Shell & Intake (Week 2)
 
-- [ ] Landing page + layout shell [frontend][design] (P0) — Maps to REQ-001/008/009
-  - Depends → Foundations
+- [ ] **Task 1.1: Landing Page and Layout Shell** [frontend][design] (P0) — Maps to REQ-001/008/009
+  - Depends → Task 0.1
   - Subtasks:
     - [ ] App header with brief privacy note (stateless, local-only)
     - [ ] Responsive, accessible layout scaffold with Tailwind
   - Acceptance Criteria:
     - Basic layout passes Lighthouse a11y ≥ 90 locally
 
-- [ ] Drag-and-drop + file picker intake [frontend] (P0) — REQ-001/002
-  - Depends → UI Shell
+- [ ] **Task 1.2: File Upload Interface** [frontend] (P0) — REQ-001/002
+  - Depends → Task 1.1
   - Subtasks:
     - [ ] Drop zone with idle/hover/active states
     - [ ] Single-file selection via input; JPG/PNG/WEBP only
@@ -75,21 +75,21 @@ Conventions:
   - Acceptance Criteria:
     - Valid files transition to next stage; invalid show actionable errors
 
-- [ ] Stage indicator (Analyzing → Processing → Finalizing) [frontend][design] (P0) — REQ-003/006
-  - Depends → Intake
+- [ ] **Task 1.3: Processing Stage Indicator** [frontend][design] (P0) — REQ-003/006
+  - Depends → Task 1.2
   - Acceptance Criteria:
     - Clear visual states; screen reader announcements of stage changes
 
-- [ ] Error UI patterns [frontend][design] (P1) — REQ-007
-  - Depends → Intake
+- [ ] **Task 1.4: Error UI Components** [frontend][design] (P1) — REQ-007
+  - Depends → Task 1.2
   - Acceptance Criteria:
     - Error component reusable; includes next steps and retry affordance
 
 
 ## Milestone 2 — Processing Pipeline (Week 3–4)
 
-- [ ] Worker infrastructure + messaging [frontend] (P0) — REQ-003
-  - Depends → Intake
+- [ ] **Task 2.1: Web Worker Infrastructure** [frontend] (P0) — REQ-003
+  - Depends → Task 1.2
   - Subtasks:
     - [ ] Create `src/workers/processor.worker.ts` with typed message protocol
     - [ ] PostMessage channels for: analyze, process, finalize, error
@@ -97,8 +97,8 @@ Conventions:
   - Acceptance Criteria:
     - Round-trip worker messages in dev; feature report surfaced to UI
 
-- [ ] Primary engine: TFJS WASM + UpscalerJS [frontend] (P0) — REQ-003/004
-  - Depends → Worker infra, Cross-origin isolation
+- [ ] **Task 2.2: TFJS WASM Processing Engine** [frontend] (P0) — REQ-003/004
+  - Depends → Task 2.1, Task 0.2
   - Subtasks:
     - [ ] Initialize TFJS WASM backend inside worker; verify backend active
     - [ ] Integrate `upscaler` with a free model (e.g., ESRGAN-like)
@@ -109,21 +109,21 @@ Conventions:
     - Process a 2000×2000 JPG on Chrome desktop without crash
     - Memory peak bounded and released after finalize
 
-- [ ] Fallback engine: wasm-vips path [frontend] (P1) — REQ-007
-  - Depends → Worker infra, Cross-origin isolation
+- [ ] **Task 2.3: WASM-VIPS Fallback Engine** [frontend] (P1) — REQ-007
+  - Depends → Task 2.1, Task 0.2
   - Subtasks:
     - [ ] Integrate `wasm-vips` for resize + sharpen
     - [ ] Switch to this path when TFJS fails or memory threshold exceeded
   - Acceptance Criteria:
     - Fallback produces valid output for same inputs; surfaced in UI
 
-- [ ] Last-resort fallback: Canvas/WebGL basic [frontend] (P2) — REQ-007
-  - Depends → Worker infra
+- [ ] **Task 2.4: Canvas/WebGL Basic Fallback** [frontend] (P2) — REQ-007
+  - Depends → Task 2.1
   - Acceptance Criteria:
     - Canvas path returns resized image with basic sharpening
 
-- [ ] Memory estimation + guardrails [frontend] (P0) — REQ-003
-  - Depends → Worker infra
+- [ ] **Task 2.5: Memory Management System** [frontend] (P0) — REQ-003
+  - Depends → Task 2.1
   - Subtasks:
     - [ ] Estimate memory based on dimensions, tiling, model footprint
     - [ ] Preflight warnings with options: proceed, pre-resize, or fallback
@@ -133,32 +133,32 @@ Conventions:
 
 ## Milestone 3 — Comparison & Metrics (Week 4)
 
-- [ ] Before/After comparison view (side-by-side static) [frontend][design] (P0) — REQ-004/006
-  - Depends → Processing pipeline
+- [ ] **Task 3.1: Before/After Comparison View** [frontend][design] (P0) — REQ-004/006
+  - Depends → Task 2.2
   - Subtasks:
     - [ ] Render original vs enhanced with synced dimensions
     - [ ] Simple zoom toggle (optional P1); MVP is static compare
   - Acceptance Criteria:
     - Users can visually assess improvement without layout shift
 
-- [ ] Metrics: PSNR + SSIM [frontend] (P1) — REQ-004/010
-  - Depends → Processing pipeline
+- [ ] **Task 3.2: Quality Metrics Implementation** [frontend] (P1) — REQ-004/010
+  - Depends → Task 2.2
   - Subtasks:
     - [ ] Implement PSNR util; integrate `ssim.js` for SSIM
     - [ ] Metrics panel with clear labels and units
   - Acceptance Criteria:
     - Metrics compute within 250ms for 2MP images; panel togglable
 
-- [ ] Download enhanced image [frontend] (P0) — REQ-005
-  - Depends → Processing pipeline
+- [ ] **Task 3.3: Enhanced Image Download** [frontend] (P0) — REQ-005
+  - Depends → Task 2.2
   - Acceptance Criteria:
     - One-click download; format preserved; filename suffix `-enhanced`
 
 
 ## Milestone 4 — Accessibility & UX Polish (Week 5)
 
-- [ ] WCAG 2.1 AA pass [frontend][design][qa] (P0)
-  - Depends → UI + Comparison
+- [ ] **Task 4.1: WCAG 2.1 AA Compliance** [frontend][design][qa] (P0)
+  - Depends → Task 3.1
   - Subtasks:
     - [ ] Keyboard operable; focus visible; no traps
     - [ ] Announce dynamic content changes (stages, errors) to SR
@@ -166,52 +166,52 @@ Conventions:
   - Acceptance Criteria:
     - `vitest-axe` checks pass on core screens
 
-- [ ] Copy + Empty/Loading/Error states [design][frontend] (P1)
-  - Depends → UI
+- [ ] **Task 4.2: UI State Management** [design][frontend] (P1)
+  - Depends → Task 1.1
   - Acceptance Criteria:
     - All core components include defined states with consistent tone
 
-- [ ] Privacy disclosure & Help/Compat page [docs][frontend] (P1) — REQ-008/009
-  - Depends → Foundations
+- [ ] **Task 4.3: Privacy and Help Documentation** [docs][frontend] (P1) — REQ-008/009
+  - Depends → Task 0.1
   - Acceptance Criteria:
     - Page explains stateless processing, supported browsers, and limitations
 
 
 ## Milestone 5 — Testing & Quality (Week 5–6)
 
-- [ ] Unit tests for utilities [qa][frontend] (P0)
-  - Depends → Pipeline
+- [ ] **Task 5.1: Utility Function Tests** [qa][frontend] (P0)
+  - Depends → Task 2.2
   - Acceptance Criteria:
     - PSNR/SSIM, memory estimation, image transforms covered ≥ 80%
 
-- [ ] Component tests for UI states [qa][frontend] (P0)
-  - Depends → UI
+- [ ] **Task 5.2: Component Unit Tests** [qa][frontend] (P0)
+  - Depends → Task 1.1
   - Acceptance Criteria:
     - Dropzone, StageIndicator, ErrorMessage, MetricsPanel tested
 
-- [ ] E2E happy path (Playwright) [qa] (P0)
-  - Depends → UI + Pipeline
+- [ ] **Task 5.3: End-to-End Testing** [qa] (P0)
+  - Depends → Task 3.1
   - Acceptance Criteria:
     - Upload→Process→Compare→Download works across Chrome/Firefox
 
-- [ ] Accessibility tests [qa] (P1)
-  - Depends → Accessibility
+- [ ] **Task 5.4: Accessibility Testing** [qa] (P1)
+  - Depends → Task 4.1
   - Acceptance Criteria:
     - No critical violations in core flows with `vitest-axe`
 
 
 ## Milestone 6 — Cross-Browser & Performance (Week 6–7)
 
-- [ ] Cross-browser matrix [qa][frontend] (P0)
-  - Depends → Pipeline
+- [ ] **Task 6.1: Cross-Browser Compatibility** [qa][frontend] (P0)
+  - Depends → Task 2.2
   - Subtasks:
     - [ ] Validate across Chrome ≥91, Firefox ≥89, Safari ≥16.4
     - [ ] Document quirks; apply shims/polyfills if needed
   - Acceptance Criteria:
     - MVP flow works on all target browsers with documented notes
 
-- [ ] Performance hardening [frontend] (P1)
-  - Depends → Pipeline
+- [ ] **Task 6.2: Performance Optimization** [frontend] (P1)
+  - Depends → Task 2.2
   - Subtasks:
     - [ ] Aggressive memory cleanup; image tiling tuning
     - [ ] Lazy-load model weights; free resources after finalize
@@ -221,38 +221,38 @@ Conventions:
 
 ## Milestone 7 — Delivery Readiness (Week 8)
 
-- [ ] Production build + static hosting config [devops] (P0)
-  - Depends → All previous
+- [ ] **Task 7.1: Production Build Configuration** [devops] (P0)
+  - Depends → All previous tasks
   - Acceptance Criteria:
     - Build artifacts optimized; headers set for COOP/COEP; CSP documented
 
-- [ ] MVP checklist sign-off [pm][qa][design][frontend] (P0)
-  - Depends → All previous
+- [ ] **Task 7.2: MVP Release Sign-off** [pm][qa][design][frontend] (P0)
+  - Depends → All previous tasks
   - Acceptance Criteria:
     - All P0 items checked; no blocking defects; demo recorded
 
 
 ## Backlog (Post-MVP Candidates)
 
-- [ ] Interactive slider comparison (drag handle) [frontend][design] (P2)
-- [ ] Presets: Quality vs Speed [frontend] (P2)
-- [ ] PWA install + cache models after first load [frontend][devops] (P2)
-- [ ] Additional formats (TIFF/HEIC) [frontend] (P2)
-- [ ] Light batch mode (2–5 images) [frontend] (P2)
+- [ ] **Task 8.1: Interactive Slider Comparison** [frontend][design] (P2)
+- [ ] **Task 8.2: Quality vs Speed Presets** [frontend] (P2)
+- [ ] **Task 8.3: PWA Installation and Caching** [frontend][devops] (P2)
+- [ ] **Task 8.4: Additional Format Support** [frontend] (P2)
+- [ ] **Task 8.5: Light Batch Processing** [frontend] (P2)
 
 
 ## Traceability Matrix (High-level)
 
-- REQ-001 (Intake): Milestone 1 — Drag-and-drop + picker
-- REQ-002 (Validation): Milestone 1 — Intake validation + errors
-- REQ-003 (3-stage processing): Milestone 1 Stage indicator; Milestone 2 Pipeline
-- REQ-004 (Compare + metrics): Milestone 3 — Comparison + Metrics
-- REQ-005 (Download): Milestone 3 — Download
-- REQ-006 (Progress messaging): Milestone 1 Stage indicator; Milestone 3 UI
-- REQ-007 (Graceful degradation): Milestone 2 — Fallbacks
-- REQ-008 (Privacy disclosure): Milestone 1 Landing; Milestone 4 Help page
-- REQ-009 (Cross-browser): Milestone 6 Matrix
-- REQ-010 (PSNR/SSIM): Milestone 3 Metrics
+- REQ-001 (Intake): Milestone 1 — Task 1.2
+- REQ-002 (Validation): Milestone 1 — Task 1.2 validation + Task 1.4 errors
+- REQ-003 (3-stage processing): Milestone 1 Task 1.3; Milestone 2 Task 2.1/2.2
+- REQ-004 (Compare + metrics): Milestone 3 — Task 3.1 + Task 3.2
+- REQ-005 (Download): Milestone 3 — Task 3.3
+- REQ-006 (Progress messaging): Milestone 1 Task 1.3; Milestone 3 UI
+- REQ-007 (Graceful degradation): Milestone 2 — Task 2.3/2.4
+- REQ-008 (Privacy disclosure): Milestone 1 Task 1.1; Milestone 4 Task 4.3
+- REQ-009 (Cross-browser): Milestone 6 Task 6.1
+- REQ-010 (PSNR/SSIM): Milestone 3 Task 3.2
 
 
 ## Risks & Dependencies (from Spec)
