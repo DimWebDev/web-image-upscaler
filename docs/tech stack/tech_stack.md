@@ -10,7 +10,7 @@
 - **Prettier** (opinionated code formatting)
 - **Husky** + **lint-staged** (run checks on staged files via Git hooks)
 
-**NPM Scripts**
+**Package Scriptss**
 
 - `pnpm lint` — ESLint over `src/**/*.{ts,tsx}`
 - `pnpm lint:fix` — ESLint with `--fix`
