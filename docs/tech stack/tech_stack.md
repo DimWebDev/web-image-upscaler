@@ -1,5 +1,31 @@
 # Stateless Web Image Upscaler — Final Tech Stack (Version-Pinned)
 
+## Code Quality & Formatting
+
+**Goal:** Consistent, automated formatting and linting across all contributors.
+
+**Tools**
+- **ESLint** (TypeScript + React + a11y rules)
+- **Prettier** (opinionated code formatting)
+- **Husky** + **lint-staged** (run checks on staged files via Git hooks)
+
+**NPM Scripts**
+- `pnpm lint` — ESLint over `src/**/*.{ts,tsx}`
+- `pnpm lint:fix` — ESLint with `--fix`
+- `pnpm format` — Prettier write across the repo
+- `pnpm format:check` — Prettier check only
+- `pnpm typecheck` — `tsc --noEmit`
+- `pnpm test` — unit/component tests
+
+**Git Hooks Policy**
+- **pre-commit:** run ESLint + Prettier on staged files (`lint-staged`)
+- **pre-push:** run typecheck + tests (fast validation before pushing)
+- **CI:** repeats lint, typecheck, tests for authoritative verification
+
+**Editors**
+- VS Code: enable “Format on Save”; install **Prettier** and **ESLint** extensions.
+
+
 ## Runtime & Targets
 
 * **Node.js:** **20.19.4** (current dev default)

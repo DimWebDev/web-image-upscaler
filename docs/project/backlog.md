@@ -55,6 +55,38 @@ Conventions:
   - Acceptance Criteria:
     - README present and accurate; reviewed by PM/Eng
 
+- [ ] **Task 0.5: Establish formatting and linting baseline (ESLint + Prettier)** (P1)
+  - Depends → none
+  - Subtasks:
+    - **Why:** Prevent style drift, catch errors early, keep diffs small.
+    - **Deliverables:**
+      - `.eslintrc.*`, `.prettierrc`, `.editorconfig`
+      - `package.json` scripts (`lint`, `lint:fix`, `format`, `format:check`, `typecheck`, `test`)
+    - **Acceptance Criteria:**
+      - Running `pnpm lint` reports no errors on baseline.
+      - Running `pnpm format:check` passes on baseline.
+      - Typecheck passes: `pnpm typecheck`.
+
+- [ ] **Task 0.6: Git hooks for local enforcement (Husky + lint-staged)** (P1)
+  - Depends → none
+  - Subtasks:
+    - **Why:** Fast feedback on commit; keep CI green.
+    - **Deliverables:**
+      - `.husky/pre-commit` runs `pnpm lint-staged`
+      - `.husky/pre-push` runs `pnpm typecheck && pnpm test`
+    - **Acceptance Criteria:**
+      - Committing a file with style issues auto-fixes or blocks with clear output.
+      - Pushing with type or test failures is blocked locally.
+
+- [ ] **Task 0.7: CI validation (repeat checks in GitHub Actions)** (P1)
+  - Depends → none
+  - Subtasks:
+    - **Why:** Authoritative gate in PRs.
+    - **Deliverables:**
+      - CI job running `pnpm install`, `pnpm typecheck`, `pnpm lint`, `pnpm test`, `pnpm format:check`
+    - **Acceptance Criteria:**
+      - PRs fail if lint/type/tests/format check fail.
+
 
 ## Milestone 1 — UI Shell & Intake (Week 2)
 
