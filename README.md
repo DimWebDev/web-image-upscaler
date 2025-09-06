@@ -2,6 +2,13 @@
 
 Client‑side image enhancement and upscaling. No uploads, no accounts, no data persistence. All processing runs in the browser.
 
+## Documentation
+
+- **[Product Requirements Document (PRD)](docs/product/PRD.md)** — Complete product vision and requirements
+- **[Technical Specification](docs/specifications/stateless-web-image-upscaler-specification-2025-09-04.md)** — Detailed technical architecture and implementation specs
+- **[UI/UX Design](docs/design/ui_ux.md)** — User interface design guidelines and mockups
+- **[Technology Stack](docs/tech%20stack/tech_stack.md)** — Complete overview of frameworks, libraries, and tools used
+
 ## Requirements
 
 - Node.js v20.19.4 (enforced via `package.json > engines`)
@@ -31,12 +38,14 @@ Open http://localhost:5173 and check the placeholder app. The page displays whet
 
 ## Cross‑Origin Isolation
 
-Vite dev server sends the required headers:
+The application requires cross-origin isolation to enable Web Workers with WASM and future SIMD/multithreading capabilities.
+
+**Development:** Vite dev server automatically sends the required headers:
 
 - `Cross-Origin-Opener-Policy: same-origin`
 - `Cross-Origin-Embedder-Policy: require-corp`
 
-These enable features needed by WASM workers and future SIMD/multithreading.
+**Production:** These same headers must be configured on your hosting platform. See [Cross-Origin Isolation Documentation](docs/deployment/cross-origin-isolation.md) for deployment guidance.
 
 ## Git Hooks
 
@@ -52,7 +61,13 @@ rm -rf .husky
 pnpm exec husky init
 ```
 
-## Notes
+## Privacy & Architecture
 
-- This repo is in early planning; placeholder React app is included to validate tooling.
-- Image processing will run entirely client‑side in Web Workers using WASM.
+- **Complete Privacy:** All image processing happens entirely in your browser. No files are uploaded to any server.
+- **Stateless Design:** No user accounts, no data persistence, no tracking. Each session is independent.
+- **Client-Side Processing:** Web Workers with WASM handle all image enhancement and upscaling operations.
+- **Sub-5-Click Workflow:** Optimized for quick drag-and-drop → process → download user experience.
+
+## Current Status
+
+This repository contains the foundational tooling and architecture setup. The placeholder React app validates the cross-origin isolation and development workflow required for the WASM-based image processing pipeline.

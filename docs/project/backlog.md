@@ -47,15 +47,15 @@ Conventions:
   - Acceptance Criteria:
     - CI runs on PRs and main pushes; all checks must pass
 
-- [ ] **Task 0.4: Documentation Foundation** [docs] (P1)
+- [x] **Task 0.4: Documentation Foundation** [docs] (P1)
   - Depends → Task 0.1
   - Subtasks:
-    - [ ] Add README with run/build/test instructions and privacy principles
-    - [ ] Link to PRD, Spec, UI/UX; note browser requirements
+    - [x] Add README with run/build/test instructions and privacy principles
+    - [x] Link to PRD, Spec, UI/UX; note browser requirements
   - Acceptance Criteria:
     - README present and accurate; reviewed by PM/Eng
 
-- [ ] **Task 0.5: Establish formatting and linting baseline (ESLint + Prettier)** (P1)
+- [x] **Task 0.5: Establish formatting and linting baseline (ESLint + Prettier)** (P1)
   - Depends → none
   - Subtasks:
     - **Why:** Prevent style drift, catch errors early, keep diffs small.
@@ -67,7 +67,7 @@ Conventions:
       - Running `pnpm format:check` passes on baseline.
       - Typecheck passes: `pnpm typecheck`.
 
-- [ ] **Task 0.6: Git hooks for local enforcement (Husky + lint-staged)** (P1)
+- [x] **Task 0.6: Git hooks for local enforcement (Husky + lint-staged)** (P1)
   - Depends → none
   - Subtasks:
     - **Why:** Fast feedback on commit; keep CI green.
