@@ -16,15 +16,15 @@ Conventions:
 
 ## Milestone 0 — Foundations & Tooling (Week 1)
 
-- [ ] **Task 0.1: Repository and Tooling Setup** [devops][frontend][docs] (P0)
+- [x] **Task 0.1: Repository and Tooling Setup** [devops][frontend][docs] (P0)
   - Depends → none
   - Subtasks:
-    - [ ] Create `package.json` with `engines.node = 20.19.4` and pinned deps per tech stack
-    - [ ] Add Vite 6, React 18, TypeScript 5, ESLint 9, Prettier 3
-    - [ ] Add Vitest 3 + React Testing Library + `vitest-axe`
-    - [ ] Configure Tailwind CSS 3 + PostCSS + Autoprefixer
-    - [ ] Set up directory structure: `src/`, `src/components/`, `src/pages/`, `src/workers/`, `src/utils/`, `public/models/`
-    - [ ] Add base configuration: `tsconfig.json`, `vite.config.ts`, `.eslintrc`, `.prettierrc`, `tailwind.config.js`
+    - [x] Create `package.json` with `engines.node = 20.19.4` and pinned deps per tech stack
+    - [x] Add Vite 6, React 18, TypeScript 5, ESLint 9, Prettier 3
+    - [x] Add Vitest 3 + React Testing Library + `vitest-axe`
+    - [x] Configure Tailwind CSS 3 + PostCSS + Autoprefixer
+    - [x] Set up directory structure: `src/`, `src/components/`, `src/pages/`, `src/workers/`, `src/utils/`, `public/models/`
+    - [x] Add base configuration: `tsconfig.json`, `vite.config.ts`, `.eslintrc`, `.prettierrc`, `tailwind.config.js`
   - Acceptance Criteria:
     - pnpm scripts available: `dev`, `build`, `test`, `lint`, `typecheck`
     - Local dev server runs and renders a placeholder App page
