@@ -58,7 +58,7 @@ pnpm-debug.log*
 *.iml
 
 # Ignore lock files (if not committed)
-# package-lock.json
+package-lock.json
 yarn.lock
 # Commit pnpm lockfile for reproducible CI installs
 # pnpm-lock.yaml
