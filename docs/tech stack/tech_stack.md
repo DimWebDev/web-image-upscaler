@@ -37,6 +37,7 @@
 
 - **Browsers (minimum):** Chrome ≥ 91, Firefox ≥ 89, Safari ≥ 16.4 (WASM SIMD baseline)
 - **Cross-origin isolation (prod):** `COOP: same-origin`, `COEP: require-corp` (for SharedArrayBuffer/WASM)
+  - See [Cross-Origin Isolation Configuration](../deployment/cross-origin-isolation.md) for deployment setup
 
 ## Core Image Processing
 

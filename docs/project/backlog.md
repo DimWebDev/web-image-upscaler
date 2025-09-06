@@ -30,14 +30,14 @@ Conventions:
     - Local dev server runs and renders a placeholder App page
     - Lint and format succeed on clean repo
 
-- [ ] **Task 0.2: Cross-Origin Isolation Configuration** [devops] (P0)
+- [x] **Task 0.2: Cross-Origin Isolation Configuration** [devops] (P0)
   - Depends → Task 0.1
   - Subtasks:
-    - [ ] Configure Vite dev server headers: `COOP: same-origin`, `COEP: require-corp`
-    - [ ] Add production header guidance (Vercel/Netlify config) to `docs/`
+    - [x] Configure Vite dev server headers: `COOP: same-origin`, `COEP: require-corp`
+    - [x] Add production header guidance (Vercel/Netlify config) to `docs/`
   - Acceptance Criteria:
-    - `self.crossOriginIsolated === true` in dev
-    - Documented steps for enabling same in production
+    - ✅ `self.crossOriginIsolated === true` in dev
+    - ✅ Documented steps for enabling same in production
 
 - [ ] **Task 0.3: CI Pipeline Setup** [devops][qa] (P1)
   - Depends → Task 0.1
