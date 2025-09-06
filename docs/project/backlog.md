@@ -39,11 +39,11 @@ Conventions:
     - ✅ `self.crossOriginIsolated === true` in dev
     - ✅ Documented steps for enabling same in production
 
-- [ ] **Task 0.3: CI Pipeline Setup** [devops][qa] (P1)
+- [x] **Task 0.3: CI Pipeline Setup** [devops][qa] (P1)
   - Depends → Task 0.1
   - Subtasks:
-    - [ ] Node 20.19.4 matrix job: install, lint, typecheck, test, build
-    - [ ] Upload build artifacts
+    - [x] Node 20.19.4 matrix job: install, lint, typecheck, test, build
+    - [x] Upload build artifacts
   - Acceptance Criteria:
     - CI runs on PRs and main pushes; all checks must pass
 
@@ -82,7 +82,7 @@ Conventions:
       - Pre-push can run typecheck and unit tests; avoid long builds/E2E—leave those to CI.
       - When adding new quality checks, always enforce them in CI; add to Husky only if they are fast and provide meaningful local feedback.
 
-- [ ] **Task 0.7: CI validation (repeat checks in GitHub Actions)** (P1)
+- [x] **Task 0.7: CI validation (repeat checks in GitHub Actions)** (P1)
   - Depends → none
   - Subtasks:
     - **Why:** Authoritative gate in PRs.
