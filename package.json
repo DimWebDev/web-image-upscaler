@@ -1,0 +1,78 @@
+{
+  "name": "web-image-upscaler",
+  "version": "0.1.0",
+  "description": "Privacy-first web application for client-side image upscaling",
+  "type": "module",
+  "engines": {
+    "node": ">=20.19 <23"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "lint": "eslint src/**/*.{ts,tsx}",
+    "lint:fix": "eslint src/**/*.{ts,tsx} --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc --noEmit",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "@tensorflow/tfjs": "4.22.0",
+    "react": "18.x",
+    "react-dom": "18.x",
+    "react-router-dom": "6.x",
+    "ssim.js": "1.0.0",
+    "upscaler": "1.0.0-beta.19",
+    "wasm-vips": "0.0.14",
+    "zustand": "4.x"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.0.0",
+    "@testing-library/react": "15.x",
+    "@types/node": "^24.3.1",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "autoprefixer": "10.x",
+    "axe-core": "4.x",
+    "eslint": "9.x",
+    "eslint-plugin-jsx-a11y": "^6.0.0",
+    "eslint-plugin-react": "^7.0.0",
+    "eslint-plugin-react-hooks": "^4.0.0",
+    "eslint-plugin-react-refresh": "^0.4.6",
+    "globals": "^15.0.0",
+    "husky": "^9.0.0",
+    "jsdom": "^26.1.0",
+    "lint-staged": "^15.0.0",
+    "postcss": "8.x",
+    "prettier": "3.x",
+    "tailwindcss": "3.x",
+    "typescript": "5.x",
+    "vite": "6.0.x",
+    "vitest": "3.2.4",
+    "vitest-axe": "0.1.x"
+  },
+  "keywords": [
+    "image",
+    "upscaling",
+    "privacy",
+    "client-side",
+    "wasm"
+  ],
+  "author": "Your Team",
+  "license": "MIT",
+  "private": true,
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{js,jsx,ts,tsx,json,css,md}": [
+      "prettier --write"
+    ]
+  }
+}

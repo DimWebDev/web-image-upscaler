@@ -1,0 +1,8 @@
+node_modules
+dist
+docs/**
+.claude/**
+.serena/**
+public/models/**
+pnpm-lock.yaml
+
