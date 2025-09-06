@@ -60,7 +60,8 @@ pnpm-debug.log*
 # Ignore lock files (if not committed)
 # package-lock.json
 yarn.lock
-pnpm-lock.yaml
+# Commit pnpm lockfile for reproducible CI installs
+# pnpm-lock.yaml
 
 # Ignore Electron packaging output
 release/
