@@ -16,17 +16,17 @@ Conventions:
 
 ## Milestone 0 — Foundations & Tooling (Week 1)
 
-- [ ] **Task 0.1: Repository and Tooling Setup** [devops][frontend][docs] (P0)
+- [x] **Task 0.1: Repository and Tooling Setup** [devops][frontend][docs] (P0)
   - Depends → none
   - Subtasks:
-    - [ ] Create `package.json` with `engines.node = 20.19.4` and pinned deps per tech stack
-    - [ ] Add Vite 6, React 18, TypeScript 5, ESLint 9, Prettier 3
-    - [ ] Add Vitest 3 + React Testing Library + `vitest-axe`
-    - [ ] Configure Tailwind CSS 3 + PostCSS + Autoprefixer
-    - [ ] Set up directory structure: `src/`, `src/components/`, `src/pages/`, `src/workers/`, `src/utils/`, `public/models/`
-    - [ ] Add base configuration: `tsconfig.json`, `vite.config.ts`, `.eslintrc`, `.prettierrc`, `tailwind.config.js`
+    - [x] Create `package.json` with `engines.node = 20.19.4` and pinned deps per tech stack
+    - [x] Add Vite 6, React 18, TypeScript 5, ESLint 9, Prettier 3
+    - [x] Add Vitest 3 + React Testing Library + `vitest-axe`
+    - [x] Configure Tailwind CSS 3 + PostCSS + Autoprefixer
+    - [x] Set up directory structure: `src/`, `src/components/`, `src/pages/`, `src/workers/`, `src/utils/`, `public/models/`
+    - [x] Add base configuration: `tsconfig.json`, `vite.config.ts`, `.eslintrc`, `.prettierrc`, `tailwind.config.js`
   - Acceptance Criteria:
-    - npm scripts available: `dev`, `build`, `test`, `lint`, `typecheck`
+    - pnpm scripts available: `dev`, `build`, `test`, `lint`, `typecheck`
     - Local dev server runs and renders a placeholder App page
     - Lint and format succeed on clean repo
 
@@ -77,6 +77,10 @@ Conventions:
     - **Acceptance Criteria:**
       - Committing a file with style issues auto-fixes or blocks with clear output.
       - Pushing with type or test failures is blocked locally.
+    - **Notes:**
+      - Keep pre-commit fast (<10s): run lint-staged (ESLint/Prettier) only.
+      - Pre-push can run typecheck and unit tests; avoid long builds/E2E—leave those to CI.
+      - When adding new quality checks, always enforce them in CI; add to Husky only if they are fast and provide meaningful local feedback.
 
 - [ ] **Task 0.7: CI validation (repeat checks in GitHub Actions)** (P1)
   - Depends → none

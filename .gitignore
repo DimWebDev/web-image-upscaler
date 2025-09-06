@@ -78,3 +78,6 @@ Desktop.ini
 # Ignore all files in temp folders
 **/tmp/
 **/temp/
+
+# Temporary plans directory
+docs/temporaryPlans/

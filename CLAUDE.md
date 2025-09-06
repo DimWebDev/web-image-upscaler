@@ -7,8 +7,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is a **Stateless Web Image Upscaler** - a privacy-first web application that enhances and upscales images entirely client-side in the browser. No server uploads, no user accounts, no data persistence.
 
 **Key Principles:**
+
 - Complete privacy through client-side processing only
-- Stateless sessions with no data persistence 
+- Stateless sessions with no data persistence
 - Sub-5-click workflow from upload to download
 - Quality-first approach (processing time flexible)
 - Graceful degradation and transparent error handling
@@ -17,18 +18,20 @@ This is a **Stateless Web Image Upscaler** - a privacy-first web application tha
 
 **Before making any changes, read all documentation in the `docs/` directory**
 
-
 ## Development Commands
 
-*Note: This project is in early planning phase. Commands will be available once development begins:*
+Use pnpm as the package manager (do not mix with npm/yarn):
 
 ```bash
-npm install        # Install dependencies
-npm run dev       # Start development server
-npm run build     # Production build
-npm run test      # Run all tests
-npm run lint      # Check code quality
-npm run typecheck # TypeScript validation
+npm install -g pnpm    # One-time: install pnpm
+pnpm install           # Install dependencies
+pnpm dev               # Start development server
+pnpm build             # Production build
+pnpm test              # Run all tests
+pnpm lint              # Check code quality
+pnpm typecheck         # TypeScript validation
+pnpm format            # Prettier write
+pnpm format:check      # Prettier check
 ```
 
 ## Code Quality Standards
@@ -56,25 +59,29 @@ npm run typecheck # TypeScript validation
 ## Git Workflow and Branching
 
 ### Branching Strategy
+
 - Use a proper branching strategy with feature branches
 - Never work directly on the main branch
 - Create descriptive branch names that reflect the feature or fix
 
 ### Pull Request Rules
+
 - **No automatic PR creation:** Pull requests should NEVER be created unless the user explicitly requests it
-- **No automatic merging:** Pull requests should NEVER be merged unless the user explicitly states the PR should be merged  
+- **No automatic merging:** Pull requests should NEVER be merged unless the user explicitly states the PR should be merged
 - **No branch deletion:** Branches should NEVER be deleted unless explicitly requested by the user
 - Always wait for explicit user instruction before any Git workflow actions
 
 ## Core Architecture
 
 ### Processing Pipeline
+
 1. **File Intake:** Drag-and-drop validation (JPG/PNG/WEBP only)
 2. **Three-Stage Processing:** Analyzing → Processing → Finalizing
 3. **Quality Comparison:** Before/after with PSNR/SSIM metrics
 4. **Client-Side Only:** All processing in Web Workers using WASM
 
 ### Key Constraints
+
 - **Privacy First:** Zero server communication for image data
 - **Browser Support:** Chrome ≥91, Firefox ≥89, Safari ≥16.4
 - **Memory Management:** Graceful handling of browser limitations
@@ -92,11 +99,10 @@ npm run typecheck # TypeScript validation
 ## Testing Requirements
 
 - Unit tests for all utilities and processing logic
-- Component tests for UI states and interactions  
+- Component tests for UI states and interactions
 - End-to-end tests for complete user workflows
 - Accessibility tests for WCAG compliance
 - Cross-browser compatibility testing
-
 
 ## Available MCP Server Tools
 
